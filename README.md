@@ -39,16 +39,28 @@ A SYN flood attack is typically identified using:
 A large number of SYN requests without corresponding ACK responses suggests an attempted SYN flood. This pattern often appears as multiple source IPs targeting the same destination IP.
 Wireshark’s I/O Graphs can then be used to visualize packet spikes over time, while the Conversations feature helps reveal suspicious communication patterns.
 
-## How I performed Traffic aAalysis and Investigation
+## How I performed Traffic Analysis and Investigation
 After loading the `.pcapng` file, I began by selecting the appropriate network interface and applying broad filters such as http and dns. I saved these filtered results into separate .pcapng files to analyze them individually.
+
+<img width="1920" height="931" alt="image" src="https://github.com/user-attachments/assets/21c9497c-1e95-4524-91ab-d373d4fa0200" />
+<img width="1920" height="530" alt="image" src="https://github.com/user-attachments/assets/5773152f-24d1-4382-87de-47e9667ac754" />
 
 I then checked for malformed packets using:  
 `tcp.len < 59`  
+
+<img width="1920" height="919" alt="image" src="https://github.com/user-attachments/assets/0b176cb2-2d30-4f5a-8dd5-70fcb7e07bf6" />
+
 This revealed a long list of small packets arriving within milliseconds of each other, indicating rapid transmission of malformed traffic. Next, I investigated the possibility of a SYN flood attack. Using the SYN/ACK filter, I found a large number of SYN requests with no ACK responses, confirming suspicious behavior.
+
+<img width="1920" height="805" alt="image" src="https://github.com/user-attachments/assets/c33d325a-ccf2-49b4-9617-6688a03ddebf" />
+
 
 I also checked for unusual ports and specifically searched for port 4444, which is commonly used for backdoor access in Metasploit. Using:  
 `tcp.port == 4444`  
 I found a traffic log attempting to communicate through this port.
+
+<img width="1920" height="970" alt="image" src="https://github.com/user-attachments/assets/4b833068-5e76-42fb-8276-23665ba2947f" />
+
 Based on these findings (malformed packets, SYN flood patterns, and attempts to access a high‑risk port) the traffic was concluded to be part of a SYN flood attack.
 
 ## Mitigation Strategies
